@@ -1,0 +1,34 @@
+image: hashicorp/terraform:latest
+
+stages:
+  - init
+  - plan
+  - apply
+
+variables:
+  TF_IN_AUTOMATION: "true"
+  TF_LOG: "TRACE"
+  AWS_DEFAULT_REGION: "us-east-1"
+
+before_script:
+  - terraform --version
+  - terraform init
+
+init:
+  stage: init
+  script:
+    - terraform init
+
+plan:
+  stage: plan
+  script:
+    - terraform plan -out=plan.tfplan
+  artifacts:
+    paths:
+      - plan.tfplan
+
+apply:
+  stage: apply
+  script:
+    - terraform apply -auto-approve plan.tfplan
+  when: manual
